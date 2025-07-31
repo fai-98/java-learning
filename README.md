@@ -1,117 +1,145 @@
-What is a Functional Interface?
-A Functional Interface is an interface that has only one abstract method (SAM – Single Abstract Method).
+# 🧠 Java Functional Programming & Streams – Notes
 
-Used as the target type for lambda expressions or method references in Java 8+.
+---
 
+## ✅ What is a Functional Interface?
 
+A **Functional Interface** is an interface that has only **one abstract method** (also known as **SAM – Single Abstract Method**).  
+It is used as the target type for **lambda expressions** or **method references** introduced in Java 8.
+
+```java
 @FunctionalInterface
 interface MyFunction {
-void execute();  // Single abstract method
+    void execute();  // Single abstract method
 }
+```
 
+> 🔸 Even without the `@FunctionalInterface` annotation, it still works.  
+> ✅ But using the annotation gives **compile-time safety**.
 
-Even if not annotated with @FunctionalInterface, it's still valid — but using the annotation gives compile-time safety.
+---
 
+## 🔹 What is an Abstract Method in Java?
 
-🔹 What is an Abstract Method in Java?
-An abstract method is a method without a body — only the method signature is provided, and subclasses must implement it.
+An **abstract method** is a method with **no body** — only a signature.  
+Subclasses must **override and implement** it.
 
+```java
 abstract class Animal {
-abstract void makeSound();  // abstract method
+    abstract void makeSound();  // Abstract method
 }
+```
 
+### Why use Abstract Methods?
 
-Think of it as a placeholder — "this method must be implemented by any concrete subclass."
+- Enforce that subclasses **implement common behavior**
+- Promote **abstraction**: define *what* to do, not *how*
+- Useful in large applications and frameworks
 
-🔹 Why Are Abstract Methods Needed?
-Force subclasses to implement common behavior
-
-E.g., every animal "makes a sound", but how depends on the animal.
-
-Supports abstraction (OOP principle)
-
-You define "what" should be done, not "how".
-
-Used in frameworks and large applications
-
-Allows base classes to define a template, while subclasses fill in the details.
-
-
+```java
 abstract class Shape {
-abstract double area();  // No body — subclasses must define this
+    abstract double area();
 }
 
 class Circle extends Shape {
-double radius = 5;
-double area() {
-return Math.PI * radius * radius;
+    double radius = 5;
+
+    double area() {
+        return Math.PI * radius * radius;
+    }
 }
-}
+```
 
+---
 
-🔷 What is a Lambda Expression in Java?
-A lambda expression is a short block of code which takes in parameters and returns a value — like an anonymous function. It was introduced in Java 8 to enable functional programming using functional interfaces.
+## 🔷 What is a Lambda Expression in Java?
 
+A **lambda expression** is a short block of code like an **anonymous function**.  
+It can be assigned to a **functional interface**.
+
+```java
 (parameters) -> { body }
 (int a, int b) -> { return a + b; }
 (a, b) -> a + b
+```
 
-
-You can only assign a lambda expression to a functional interface — an interface with a single abstract method.
+```java
 @FunctionalInterface
 interface MathOperation {
-int operate(int a, int b);
+    int operate(int a, int b);
 }
 
-// Lambda for addition
 MathOperation add = (a, b) -> a + b;
 System.out.println(add.operate(5, 3));  // Output: 8
+```
 
+---
 
+## 🔸 Common Functional Interfaces (java.util.function)
 
-checks a condition
+### ✅ Predicate<T>
+Checks a condition and returns a boolean
+
+```java
 Predicate<String> isShort = s -> s.length() < 5;
 System.out.println(isShort.test("cat"));  // true
+```
 
-consumes a value
+### ✅ Consumer<T>
+Consumes a value and performs an action
+
+```java
 Consumer<Integer> print = n -> System.out.println(n);
 print.accept(10);  // Output: 10
+```
 
-transforms input to output
+### ✅ Function<T, R>
+Transforms input of type T to output of type R
+
+```java
 Function<String, Integer> length = s -> s.length();
 System.out.println(length.apply("hello"));  // Output: 5
+```
 
-Supplier<T> is a functional interface from java.util.function package that:
-Takes no input
-Returns a result of type T
+### ✅ Supplier<T>
+Supplies a value of type T (no input)
 
+```java
+Supplier<Double> random = () -> Math.random();
+System.out.println(random.get());  // e.g. 0.5476
+```
 
+---
 
-❓ Can a Stream be reused?
-❌ No, Java streams cannot be reused.
-Once a stream has been consumed (i.e., a terminal operation like .collect(), .forEach(), .count() is called), it cannot be used again.
+## 💡 Streams in Java
 
-❓ Why is Stream lazy?
-Streams in Java are designed to be lazy to improve performance and efficiency.
+### ❓ Can a Stream be reused?
+> ❌ **No**, Java streams are single-use.  
+Once a **terminal operation** is called (like `.forEach()`, `.count()`), the stream is **consumed** and cannot be reused.
 
-✅ What does laziness mean?
-Intermediate operations (like .map(), .filter(), .sorted()) are not executed immediately.
-They are only executed when a terminal operation is called (.collect(), .forEach(), .count() etc.).
+### ❓ Why is Stream Lazy?
+Streams are **lazy** to improve performance.
 
+- **Intermediate operations** (`map()`, `filter()`, etc.) are **not executed immediately**
+- Only run when a **terminal operation** (`collect()`, `forEach()`, `count()`) is triggered
 
-✅ What is a Parallel Stream in Java?
-A parallel stream divides the stream’s data into multiple chunks, processes them in parallel using multiple threads, and then combines the results.
+---
 
-It’s useful when you want to speed up operations on large collections by leveraging multi-core CPUs.
+## ⚡ What is a Parallel Stream?
 
-🔍 Difference: .stream() vs .parallelStream()
-Feature	.stream() (Sequential)	.parallelStream() (Parallel)
-Threads used	Single thread	ForkJoinPool (multiple threads)
-Order maintained	Yes	No (unless explicitly handled)
-Performance (small data)	Often faster or same	Sometimes slower (overhead)
-Performance (large data)	May be slower	Often faster (multi-core)
+A **parallel stream** breaks data into chunks and processes them **in parallel using multiple threads**, leveraging multi-core CPUs.
 
+```java
+list.parallelStream().forEach(...);
+```
 
-ForkJoin Pool Technique will also come in MultiThreading
+### 🔍 .stream() vs .parallelStream()
 
+| Feature                | `.stream()` (Sequential) | `.parallelStream()` (Parallel)      |
+|------------------------|--------------------------|--------------------------------------|
+| Threads used           | Single thread            | Multiple threads (ForkJoinPool)      |
+| Order maintained       | Yes                      | No (unless handled manually)         |
+| Small data performance | Fast or equal            | Sometimes slower (thread overhead)   |
+| Large data performance | Slower                   | Often faster (multi-core parallelism)|
 
+> ☑️ Uses **ForkJoin Pool**, which is also relevant in **multithreading**.
