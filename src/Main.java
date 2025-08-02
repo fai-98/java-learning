@@ -124,6 +124,19 @@ public class Main {
 
         //terminal operators forEach(), toArray(), reduce(), collect(), min and max, count(),
         //anyMatch(), allMatch(), noneMatch(), findFirst()
+
+
+
+        //Multithreading using extends thread
+        MultiThreadingPractical mtRun = new MultiThreadingPractical();
+//        mtRun.runThreadsUisngExtends();
+
+        //Multithreading using implements runnnable
+       for(int i=1; i<=3; i++){
+           MultiThreadingImplement myThing = new MultiThreadingImplement(i);
+           Thread myThread = new Thread(myThing);
+           myThread.start();
+       }
     }
 
 
