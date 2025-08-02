@@ -137,6 +137,15 @@ public class Main {
            Thread myThread = new Thread(myThing);
            myThread.start();
        }
+
+       //JDBC display users using userDAO
+
+//       try {
+//            UserDAO user = new UserDAO();
+//            user.listUsers();
+//       }catch (Exception e){
+//           e.printStackTrace();
+//       }
     }
 
 
