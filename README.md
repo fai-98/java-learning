@@ -245,4 +245,99 @@ Concurrency = Managing access to shared resources among threads.
 
 
 
+SQL --- pending 
+-- Switch to or create the test database
+CREATE DATABASE IF NOT EXISTS testdb;
+USE testdb;
 
+-- Create the users table
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50),
+  email VARCHAR(100)
+);
+
+-- Insert sample user records
+INSERT INTO users (name, email)
+VALUES 
+  ('Alice', 'alice@example.com'),
+  ('Bob', 'bob@example.com');
+
+-- Retrieve all user records
+SELECT * FROM users;
+
+-- Update Bob's email address
+UPDATE users
+SET email = 'bob@newmail.com'
+WHERE name = 'Bob';
+
+-- Delete the record for Alice
+DELETE FROM users
+WHERE name = 'Alice';
+
+
+
+# DAO (Data Access Object)
+
+**DAO** in backend development is a design pattern used to separate the data persistence logic from the business logic of an application.  
+It abstracts all interactions with the data source (such as a database) into a separate layer, enabling clean separation of concerns and promoting easier maintenance, testing, and flexibility.
+
+---
+
+## 🔑 Key Points
+
+### ✅ Purpose:
+DAO provides an **abstract interface** for accessing the database or other persistence mechanisms.  
+The rest of the application interacts with DAOs **without needing to know how data is stored or retrieved**.
+
+---
+
+## 🧩 Components Involved
+
+- **Business Object:**  
+  The main objects containing business logic that use DAO to persist or fetch data.
+
+- **Data Access Object:**  
+  Interfaces and classes that perform CRUD (Create, Read, Update, Delete) operations.
+
+- **Data Source:**  
+  The actual database or data repository.
+
+- **Transfer Object (DTO):**  
+  Used to carry data between layers efficiently.
+
+---
+
+## ✅ Benefits of DAO
+
+- Encapsulation of database access details  
+- Allows easy switching of databases or data sources without affecting business logic  
+- Enables better unit testing by mocking DAOs  
+- Centralizes data access, improving maintainability  
+
+---
+
+## ⚙️ How It Works
+
+Your **service or business layer** calls methods on DAO interfaces:  
+```java
+UserDao.getUserById(101);
+
+
+These DAO methods internally run SQL queries or use ORM frameworks (like JPA/Hibernate) to:
+Interact with the data source
+Return results in POJOs or DTOs
+
+
+
+TRY WITH RESOURCES 
+When you use try-with-resources, you don’t need to explicitly close the resources like Connection, Statement, or ResultSet. Java will automatically close them at the end of the try block.
+
+ex: when we use in try(here..)
+try (Connection conn = JavaDatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + " - " + rs.getString("name"));
+            }
+        } 
